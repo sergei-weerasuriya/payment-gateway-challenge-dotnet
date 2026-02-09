@@ -25,11 +25,6 @@ docker-compose up -d bank_simulator
 dotnet run --project src/PaymentGateway.Api
 ```
 
-### Running Tests
-```bash
-dotnet test
-```
-
 ## API Endpoints
 All endpoints require the `X-Api-Key` header for merchant authentication.
 
@@ -62,19 +57,17 @@ GET /api/payments/{id}
 - `404 Not Found` - Payment doesn't exist or belongs to a different merchant
 
 ## Project Structure
-src/
-  PaymentGateway.Api       -      Web API layer (controllers, filters, middleware)
+  **PaymentGateway.Api**       -      Web API layer (controllers, filters, middleware)
   
-  PaymentGateway.Application  -   Business logic (services, validation, bank client)
+  **PaymentGateway.Application**  -   Business logic (services, validation, bank client)
   
-  PaymentGateway.Contracts   -    Shared request/response models and enums
+  **PaymentGateway.Contracts**   -    Shared request/response models and enums
   
-  PaymentGateway.Client     -     Typed HTTP client SDK for consuming the API
+  **PaymentGateway.Client**     -     Typed HTTP client SDK for consuming the API
   
-test/
-  PaymentGateway.Api.Tests     -      Integration tests (WebApplicationFactory)
+  **PaymentGateway.Api.Tests**     -      Integration tests (WebApplicationFactory)
   
-  PaymentGateway.Application.Tests  -  Unit tests (services, validation, bank client)
+  **PaymentGateway.Application.Tests**  -  Unit tests (services, validation, bank client)
 
 
 ## Design Decisions
