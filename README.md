@@ -64,11 +64,16 @@ GET /api/payments/{id}
 ## Project Structure
 src/
   PaymentGateway.Api            Web API layer (controllers, filters, middleware)
+  
   PaymentGateway.Application    Business logic (services, validation, bank client)
+  
   PaymentGateway.Contracts      Shared request/response models and enums
+  
   PaymentGateway.Client         Typed HTTP client SDK for consuming the API
+  
 test/
   PaymentGateway.Api.Tests          Integration tests (WebApplicationFactory)
+  
   PaymentGateway.Application.Tests  Unit tests (services, validation, bank client)
 
 
