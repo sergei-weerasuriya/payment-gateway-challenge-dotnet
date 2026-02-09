@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Routing;
 using PaymentGateway.Application.Idempotency;
 
 namespace PaymentGateway.Api.Filters;
@@ -60,6 +61,15 @@ public sealed class IdempotencyFilter : IAsyncActionFilter
             _logger.LogInformation("Returning cached response for idempotency key: {IdempotencyKey}", idempotencyKey);
 
             context.HttpContext.Response.Headers["X-Idempotent-Replay"] = "true";
+
+            if (cachedResponse.Headers is not null)
+            {
+                foreach (var header in cachedResponse.Headers)
+                {
+                    context.HttpContext.Response.Headers[header.Key] = header.Value;
+                }
+            }
+
             context.Result = new ContentResult
             {
                 StatusCode = cachedResponse.StatusCode,
@@ -91,11 +101,30 @@ public sealed class IdempotencyFilter : IAsyncActionFilter
                 var responseBody = JsonSerializer.Serialize(objectResult.Value);
                 var statusCode = objectResult.StatusCode ?? StatusCodes.Status200OK;
 
+                Dictionary<string, string>? headers = null;
+                if (executedContext.Result is CreatedAtActionResult createdAtResult)
+                {
+                    var urlHelperFactory = context.HttpContext.RequestServices.GetRequiredService<IUrlHelperFactory>();
+                    var urlHelper = urlHelperFactory.GetUrlHelper(context);
+                    var request = context.HttpContext.Request;
+                    var locationUrl = urlHelper.Action(
+                        createdAtResult.ActionName,
+                        createdAtResult.ControllerName,
+                        createdAtResult.RouteValues,
+                        request.Scheme,
+                        request.Host.ToUriComponent());
+                    if (locationUrl is not null)
+                    {
+                        headers = new Dictionary<string, string> { { "Location", locationUrl } };
+                    }
+                }
+
                 await _idempotencyService.SetAsync(idempotencyKey, new IdempotentResponse
                 {
                     StatusCode = statusCode,
                     Body = responseBody,
-                    ContentType = "application/json"
+                    ContentType = "application/json",
+                    Headers = headers
                 });
 
                 _logger.LogInformation("Stored response for idempotency key: {IdempotencyKey}, StatusCode: {StatusCode}", idempotencyKey, statusCode);

@@ -6,4 +6,5 @@ public sealed record IdempotentResponse
     public required string Body { get; init; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public string ContentType { get; init; } = "application/json";
+    public Dictionary<string, string>? Headers { get; init; }
 }

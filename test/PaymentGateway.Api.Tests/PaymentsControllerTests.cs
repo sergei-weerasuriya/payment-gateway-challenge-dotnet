@@ -302,6 +302,7 @@ public class PaymentsControllerTests : IClassFixture<WebApplicationFactory<Progr
         // Assert
         secondResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         secondResponse.Headers.Contains("X-Idempotent-Replay").Should().BeTrue();
+        secondResponse.Headers.Location.Should().Be(firstResponse.Headers.Location);
         secondPayment!.Id.Should().Be(firstPayment!.Id);
 
         // Verify bank was only called once
