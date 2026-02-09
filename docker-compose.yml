@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  bank_simulator:
+    container_name: bank_simulator
+    image: bbyars/mountebank:2.8.1
+    ports:
+      - "2525:2525"
+      - "9080:8080"
+    command: --configfile /imposters/bank_simulator.ejs --allowInjection
+    volumes:
+      - type: bind
+        source: ./imposters
+        target: /imposters
+
+  payment_gateway:
+    container_name: payment_gateway
+    build: .
+    ports:
+      - "5067:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - BankClient__BaseUrl=http://bank_simulator:8080
+    depends_on:
+      - bank_simulator
