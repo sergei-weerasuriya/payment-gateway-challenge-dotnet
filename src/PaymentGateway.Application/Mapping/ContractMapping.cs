@@ -38,24 +38,17 @@ public static class ContractMapping
         };
     }
 
-    public static Payment ToPayment(this PaymentDto dto)
+    public static PaymentResult ToPaymentResult(this PaymentDto dto)
     {
-        return new Payment
+        return new PaymentResult
         {
             Id = dto.Id,
             Status = dto.Status,
-            Card = new Card
-            {
-                Number = dto.CardNumber,
-                ExpiryMonth = dto.ExpiryMonth,
-                ExpiryYear = dto.ExpiryYear,
-                Cvv = dto.Cvv
-            },
+            CardNumberLastFour = dto.CardLastFour,
+            ExpiryMonth = dto.ExpiryMonth,
+            ExpiryYear = dto.ExpiryYear,
             Currency = dto.Currency,
-            Amount = dto.Amount,
-            AuthorizationCode = dto.AuthorizationCode,
-            CreatedAt = dto.CreatedAt,
-            MerchantId = dto.MerchantId
+            Amount = dto.Amount
         };
     }
 }

@@ -99,7 +99,7 @@ public class PaymentService : IPaymentService
             return null;
         }
 
-        return paymentDto.ToPayment().ToPaymentResult();
+        return paymentDto.ToPaymentResult();
     }
 
     private static BankRequest CreateBankRequest(ProcessPaymentCommand command)

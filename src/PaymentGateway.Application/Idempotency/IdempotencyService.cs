@@ -5,7 +5,7 @@ namespace PaymentGateway.Application.Idempotency;
 public class IdempotencyService : IIdempotencyService
 {
     private readonly ConcurrentDictionary<string, IdempotentResponse> _responses = new();
-    private readonly ConcurrentDictionary<string, DateTime> _locks = new();
+    private readonly ConcurrentDictionary<string, (Guid Owner, DateTime AcquiredAt)> _locks = new();
     private readonly TimeSpan _responseExpiry = TimeSpan.FromHours(24);
     private readonly TimeSpan _lockExpiry = TimeSpan.FromMinutes(5);
 
@@ -32,21 +32,22 @@ public class IdempotencyService : IIdempotencyService
 
     public Task<bool> TryAcquireLockAsync(string idempotencyKey)
     {
+        var owner = Guid.NewGuid();
         var now = DateTime.UtcNow;
 
         var result = _locks.AddOrUpdate(
             idempotencyKey,
-            now,
-            (key, existingTime) =>
+            (owner, now),
+            (key, existing) =>
             {
-                if (now - existingTime > _lockExpiry)
+                if (now - existing.AcquiredAt > _lockExpiry)
                 {
-                    return now;
+                    return (owner, now);
                 }
-                return existingTime;
+                return existing;
             });
 
-        return Task.FromResult(result == now);
+        return Task.FromResult(result.Owner == owner);
     }
 
     public Task ReleaseLockAsync(string idempotencyKey)
@@ -70,7 +71,7 @@ public class IdempotencyService : IIdempotencyService
 
         foreach (var key in _locks.Keys)
         {
-            if (_locks.TryGetValue(key, out var lockTime) && now - lockTime >= _lockExpiry)
+            if (_locks.TryGetValue(key, out var lockEntry) && now - lockEntry.AcquiredAt >= _lockExpiry)
             {
                 _locks.TryRemove(key, out _);
             }
