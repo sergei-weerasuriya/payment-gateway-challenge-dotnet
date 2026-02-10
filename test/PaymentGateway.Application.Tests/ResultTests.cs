@@ -108,7 +108,7 @@ public class ResultTests
         var act = () => result.GetValueOrThrow();
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*failed result*");
+            .WithMessage("Cannot get value from a failed result.");
     }
 
     #endregion

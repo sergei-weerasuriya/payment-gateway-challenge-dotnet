@@ -22,7 +22,7 @@ This starts all services:
 docker-compose up -d bank_simulator
 
 # Run the API
-dotnet run --project src/PaymentGateway.Api
+docker-compose up -d payment_gateway
 ```
 
 ## API Endpoints

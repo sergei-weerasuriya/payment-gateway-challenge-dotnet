@@ -50,7 +50,7 @@ public class PaymentServiceTests : IDisposable
     public void Dispose()
     {
         _metrics.Dispose();
-        (_meterFactory as IDisposable)?.Dispose();
+        _meterFactory.Dispose();
     }
 
     private static ProcessPaymentCommand CreateValidCommand() => new()
