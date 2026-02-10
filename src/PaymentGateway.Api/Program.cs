@@ -51,6 +51,7 @@ try
         });
 
         options.OperationFilter<IdempotencyKeyOperationFilter>();
+        options.OperationFilter<CorrelationIdOperationFilter>();
     });
 
     // Register application services
@@ -61,10 +62,7 @@ try
     builder.Services.AddScoped<ApiKeyAuthFilter>();
 
     var app = builder.Build();
-
-    // Configure the HTTP request pipeline.
-
-    // Add request logging middleware (should be early in the pipeline)
+    
     app.UseMiddleware<RequestLoggingMiddleware>();
 
     if (app.Environment.IsDevelopment())

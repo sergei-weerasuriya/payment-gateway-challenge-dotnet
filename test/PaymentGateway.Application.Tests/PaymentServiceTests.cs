@@ -376,7 +376,7 @@ public class PaymentServiceTests : IDisposable
     }
 
     /// <summary>
-    /// Simple IMeterFactory implementation for tests.
+    ///  IMeterFactory implementation for tests.
     /// </summary>
     private sealed class TestMeterFactory : IMeterFactory
     {
